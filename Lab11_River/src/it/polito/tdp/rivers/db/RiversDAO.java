@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,6 +61,103 @@ public class RiversDAO {
 
 		return flows;
 	}
+	
+	public LocalDate dataPrimaMisura(River r){
+		
+		String sql ="select day from flow where river = ? order by day limit 1";
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, r.getId());
+			
+			ResultSet res = st.executeQuery();
+			
+			if( res.next() ){
+				return res.getDate("day").toLocalDate();
+			}
+			else return null;
+			
+			
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+	}
+	
+   public LocalDate dataUltimaMisura(River r){
+		
+		String sql ="select day from flow where river = ? order by day desc limit 1";
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, r.getId());
+			
+			ResultSet res = st.executeQuery();
+			
+			if( res.next() ){
+				return res.getDate("day").toLocalDate();
+			}
+			else return null;
+			
+			
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+	}
+
+ public int countMisure(River r){
+	
+	String sql ="select count(*) from flow where river = ? ";
+	try {
+		Connection conn = DBConnect.getConnection();
+		PreparedStatement st = conn.prepareStatement(sql);
+		
+		st.setInt(1, r.getId());
+		
+		ResultSet res = st.executeQuery();
+		
+		res.first();	
+		
+		return res.getInt(1);
+		
+		
+		
+	} catch (SQLException e) {
+		// e.printStackTrace();
+		throw new RuntimeException();
+		}
+    }
+ 
+	public List<Double> flussiDelFiume(River r){
+		List<Double> flussi = new LinkedList<Double>();
+		String sql ="select flow from flow where river = ? ";
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, r.getId());
+			
+			ResultSet res = st.executeQuery();
+			
+			while( res.next() ){
+				flussi.add(res.getDouble("flow"));
+			}
+			res.close();
+			conn.close();
+			return flussi;
+			
+			
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException();
+		}
+	
+}
 
 	public static void main(String[] args) {
 		RiversDAO dao = new RiversDAO();

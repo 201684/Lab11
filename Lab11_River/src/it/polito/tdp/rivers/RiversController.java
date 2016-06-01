@@ -1,7 +1,12 @@
 package it.polito.tdp.rivers;
 
+import it.polito.tdp.rivers.model.Model;
+import it.polito.tdp.rivers.model.River;
+
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -9,6 +14,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class RiversController {
+	
+	Model model;
 
     @FXML
     private ResourceBundle resources;
@@ -17,7 +24,7 @@ public class RiversController {
     private URL location;
 
     @FXML
-    private ComboBox<?> boxRiver;
+    private ComboBox<River> boxRiver;
 
     @FXML
     private TextField txtEndDate;
@@ -39,6 +46,18 @@ public class RiversController {
 
     @FXML
     private TextField txtK;
+    
+    @FXML
+    void doRiempi(ActionEvent event) {
+    	
+    	River r = boxRiver.getValue();
+    	
+    	txtStartDate.setText(model.dataPrimaMisura(r).toString());
+    	txtEndDate.setText(model.dataUltimaMisura(r).toString());
+    	txtNumMeasurements.setText(Integer.toString(model.countMisure(r)));
+    	txtFMed.setText(Double.toString(model.flussoMedio(model.flussiDelFiume(r))));
+
+    }
 
     @FXML
     void initialize() {
@@ -52,4 +71,11 @@ public class RiversController {
         assert txtK != null : "fx:id=\"txtK\" was not injected: check your FXML file 'Rivers.fxml'.";
 
     }
+
+	public void setModel(Model model) {
+		// TODO Auto-generated method stub
+		this.model = model;
+		boxRiver.getItems().addAll(model.getAllRivers());
+		
+	}
 }
